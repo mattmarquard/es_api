@@ -69,6 +69,9 @@ event_response = {
     }
 }
 
-json_user = json.dumps(user_response)
-json_event = json.dumps(event_response)
-json_venue = json.dumps(venue_response)
+#event_response = event_response.replace(" ", "").replace("\n", "")
+#user_response = user_response.replace(" ", "").replace("\n", "")
+#venue_response = venue_response.replace("\n", "").replace(" ", "")
+json_user = user_response
+json_event = event_response
+json_venue = venue_response

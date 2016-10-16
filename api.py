@@ -1,4 +1,5 @@
 from flask import Flask
+import json
 from flask_restful import Resource, Api, reqparse
 from es_connect import query_es
 import testdata
@@ -38,7 +39,8 @@ class SearchUsers(Resource):
 
 class SearchVenues(Resource):
     def post(self):
-        return testdata.json_venue 
+        unij = testdata.json_venue 
+        return json.loads(unij)
         #try:
         #    parse = reqparse.RequestParser()
         #    parse.add_argument('query', type=str, help='Query to search users')
