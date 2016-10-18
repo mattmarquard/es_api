@@ -1,11 +1,12 @@
 import json
 
-user_response = {
-    "_index" : "firebase",
-    "_type" : "user",
-    "_id" : "ghW2JMckiAg3TaHlnJr3Qdnj2L62",
-    "_score" : 1.0,
-    "_source" : {
+user_response = { 
+#    "_index" : "firebase",
+#    "_type" : "user",
+#    "_id" : "ghW2JMckiAg3TaHlnJr3Qdnj2L62",
+#    "_score" : 1.0,
+#    "_source" : {
+    "ghW2JMckiAg3TaHlnJr3Qdnj2L62" : {
         "email" : "city@city.com",
         "events" : {
             "-KSKgkenLhdzO-4CKQga" : "true",
