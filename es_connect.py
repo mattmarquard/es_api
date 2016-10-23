@@ -1,5 +1,6 @@
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl.query import MultiMatch
 
 def query_es(query=None):
 
@@ -20,3 +21,25 @@ def query_es(query=None):
 
     for tag in response.aggregations.per_tag.buckets:
 	print(tag.key, tag.max_lines.value)
+
+def search_fields(query, fields=[], dt=[]):
+    client = Elasticsearch()
+    se = Search(using=client, index="firebase")
+    #se = se.params(doc_type=dt)
+    if fields > 0:
+        q = Q("multi_match", query=query, fields=fields)
+    else:
+        q = Q("match", query=query)
+    se = se.query(q)
+    #import pdb; pdb.set_trace()
+    response = se.execute()
+    return response.to_dict()
+
+def search_all(query, dt=[]):
+    client = Elasticsearch()
+    se = Search(using=client, index="firebase")
+    #se = se.params(doc_type=dt)
+    q = Q("match", query=query)
+    se = se.query(q)
+    response = se.execute()
+    return response.to_dict()
