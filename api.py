@@ -1,13 +1,11 @@
 from flask import Flask
-import json
 from flask_restful import Resource, Api, reqparse
-from es_connect import query_es, search_fields, search_all
-import testdata
+from es_connect import search_fields, search_latlon
 
 app = Flask(__name__)
 api = Api(app)
 
-#class CreateUser(Resource):
+# class CreateUser(Resource):
 #    def post(self):
 #        try:
 #            parser = reqparse.RequestParser()
@@ -22,9 +20,10 @@ api = Api(app)
 #        except Exception as e:
 #            return {'error': str(e)}
 #
+
+
 class SearchUsers(Resource):
     def post(self):
-	#return testdata.json_user
         try:
             parse = reqparse.RequestParser()
             parse.add_argument('query', type=str, help='Query to search users')
@@ -32,16 +31,15 @@ class SearchUsers(Resource):
             _query = args['query']
             response = search_fields(_query, ['name'])
 
-            return {'Result': response }
+            return response
 
         except Exception as e:
 
             return {'error': str(e)}
 
+
 class SearchVenues(Resource):
     def post(self):
-        #unij = testdata.json_venue 
-        #return json.loads(unij)
         try:
             parse = reqparse.RequestParser()
             parse.add_argument('query', type=str, help='Query to search venues using Event.location_name')
@@ -49,15 +47,31 @@ class SearchVenues(Resource):
             _query = args['query']
             response = search_fields(_query, ['location_name'], ["events"])
 
-            return {'Result': response }
+            return response
 
         except Exception as e:
 
             return {'error': str(e)}
 
+
+class SearchEventsByPoint(Resource):
+    def post(self):
+        try:
+            parse = reqparse.RequestParser()
+            parse.add_argument('lat', type=int, help='Query to search venues using Event.lat')
+            parse.add_argument('lon', type=int, help='Query to search venues using Event.lon')
+            args = parse.parse_args()
+            lat = args['lat']
+            lon = args['lon']
+            response = search_latlon(lat, lon)
+
+            return response
+        except Exception as e:
+            return {'error': str(e)}
+
+
 class SearchEvents(Resource):
     def post(self):
-	#return testdata.json_event
         try:
             parse = reqparse.RequestParser()
             parse.add_argument('query', type=str, help='Query for event names and descriptions')
@@ -65,7 +79,7 @@ class SearchEvents(Resource):
 
             _query = args['query']
             response = search_fields(_query, ['name', 'description'])
-            return {'Result': response }
+            return response
         except Exception as e:
             return {'error': str(e)}
 
@@ -74,6 +88,7 @@ class SearchEvents(Resource):
 api.add_resource(SearchUsers, '/users')
 api.add_resource(SearchEvents, '/events')
 api.add_resource(SearchVenues, '/venues')
+api.add_resource(SearchEventsByPoint, '/point')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

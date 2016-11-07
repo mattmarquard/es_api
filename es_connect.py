@@ -17,10 +17,10 @@ def query_es(query=None):
     response = s.execute()
 
     for hit in response:
-	print(hit.meta.score, hit.title)
+        print(hit.meta.score, hit.title)
 
     for tag in response.aggregations.per_tag.buckets:
-	print(tag.key, tag.max_lines.value)
+        print(tag.key, tag.max_lines.value)
 
 def search_fields(query, fields=[], dt=[]):
     client = Elasticsearch()
@@ -33,13 +33,27 @@ def search_fields(query, fields=[], dt=[]):
     se = se.query(q)
     #import pdb; pdb.set_trace()
     response = se.execute()
-    return response.to_dict()
+    response = response.to_dict()['hits']['hits']
+    results = {}
+    for v in response:
+        key = v['_id']
+        results[key] = v['_source']
+    return results
 
-def search_all(query, dt=[]):
+
+def search_latlon(lat, lon, dt=[]):
     client = Elasticsearch()
     se = Search(using=client, index="firebase")
     #se = se.params(doc_type=dt)
-    q = Q("match", query=query)
+    q = Q({"bool" : {"must" : {"match_all" : {}}}})
     se = se.query(q)
+    se = se.filter("geo_distance",
+                   distance="1000km",
+                   location="{}, {}".format(lat,lon),)
     response = se.execute()
-    return response.to_dict()
+    response = response.to_dict()['hits']['hits']
+    results = {}
+    for v in response:
+        key = v['_id']
+        results[key] = v['_source']
+    return results
